@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LISA - AI Assistant</title>
+    <!-- Use relative paths with versioning to bust cache -->
+    <link rel="stylesheet" href="/static/style.css?v=2.5">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="glass-container">
+        <header>
+            <div class="logo">LISA <span>GOD MODE v2.0</span></div>
+            <div class="status-badge" id="backend-status">OFFLINE</div>
+            <div class="power-indicator">⚡ FULL SYSTEM ACCESS</div>
+        </header>
+
+        <main>
+            <div class="ai-avatar-section">
+                <div class="avatar-container">
+                    <div class="lisa-avatar-frame" id="lisa-avatar">
+                        <img src="/static/lisa_v2.jpg" alt="Lisa AI" class="lisa-image">
+                        <div class="lisa-mouth" id="lisa-mouth"></div>
+                        <div class="avatar-glow-ring"></div>
+                        <div class="scanning-line"></div>
+                        <div class="emotion-overlay tears" id="tears-container"></div>
+                        <div class="emotion-overlay cheeks" id="cheeks-container"></div>
+                    </div>
+                    <div class="speech-bubble" id="speech-bubble"></div>
+                </div>
+
+                <div class="voice-indicator" id="voice-indicator">
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                </div>
+
+                <div class="avatar-status" id="avatar-status">💜 System Initialized...</div>
+            </div>
+
+            <div class="control-grid">
+                <div class="terminal-card glass-card">
+                    <h3>Command Log</h3>
+                    <div id="terminal-log" class="log-content">
+                        <div class="log-entry">Waiting for connection...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area glass-card">
+                <button id="mic-btn" class="icon-btn" onclick="toggleVoice()">
+                    <div class="mic-icon"></div>
+                </button>
+                <input type="text" id="command-input" placeholder="Give Lisa a command..." autocomplete="off">
+                <button id="send-btn" onclick="handleInput()">SEND</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Start Overlay for Browser Gesture -->
+    <div id="start-overlay" class="start-overlay">
+        <button class="start-btn" onclick="startLisaSystem()">ACTIVATE LISA AI</button>
+        <p>Enabling high-performance system control and voice interaction</p>
+    </div>
+
+    <!-- Scripts at the end with versioning -->
+    <script src="/static/app.js?v=2.5"></script>
+</body>
+
+</html>

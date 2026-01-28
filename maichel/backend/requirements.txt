@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pyautogui
+python-multipart
+pydantic
+psutil
+send2trash
+pystray
+keyboard
+Pillow
