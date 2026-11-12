@@ -5,9 +5,8 @@ const API_BASE = '/api/v1';
 let terminalLog, statusBadge, commandInput, micBtn, lisaFrame, speechBubble;
 
 function addLog(msg, type = 'info') {
-    if (!terminalLog) {
-        console.log(`[${type}] ${msg}`);
-        return;
+    if (!terminalLog)             console.log(`[${type}] ${msg}`);
+            return;
     }
     const entry = document.createElement('div');
     entry.className = `log-entry ${type}`;
