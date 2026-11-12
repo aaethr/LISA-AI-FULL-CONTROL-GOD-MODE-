@@ -1,6 +1,6 @@
 @echo off
 echo ==========================================
-echo  Installing Michael AI God Mode
+echo  Installing LISA Personal AI
 echo ==========================================
 echo.
 
@@ -26,7 +26,7 @@ if errorlevel 1 (
 echo [3/3] Installation complete!
 echo.
 echo ==========================================
-echo  Michael AI God Mode is ready!
+echo  LISA Personal AI is ready!
 echo ==========================================
 echo.
 echo To run Michael AI, use: python backend\main.py

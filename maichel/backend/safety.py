@@ -4,12 +4,13 @@ Provides intelligent protection for critical system operations
 """
 import os
 from pathlib import Path
-from typing import List, Dict, Tuple
+from typing import Dict, Tuple
 
 class SafetyGuardian:
     """Centralized safety checking system"""
     
     def __init__(self):
+        self.workspace_root = (Path(__file__).resolve().parent.parent).resolve()
         # Protected system directories
         self.protected_paths = [
             r"C:\Windows",
@@ -25,6 +26,13 @@ class SafetyGuardian:
         # Thresholds for safety checks
         self.max_file_count_threshold = 100
         self.max_size_mb_threshold = 1000  # 1GB
+
+    def _is_within_root(self, path: str, root: Path) -> bool:
+        try:
+            Path(path).expanduser().resolve(strict=False).relative_to(root)
+            return True
+        except ValueError:
+            return False
         
     def is_protected_path(self, path: str) -> Tuple[bool, str]:
         """
@@ -97,31 +105,44 @@ class SafetyGuardian:
             'blocked': False,
             'blocked_reason': ''
         }
-        
-        # Check if path exists
-        if not os.path.exists(path):
+
+        resolved_path = Path(path).expanduser().resolve(strict=False)
+        if not self._is_within_root(str(resolved_path), self.workspace_root):
+            result['blocked'] = True
+            result['blocked_reason'] = f"Path is outside the approved workspace: {resolved_path}"
             result['safe'] = False
-            result['warnings'].append(f"Path does not exist: {path}")
             return result
-        
+
         # Check if in protected directory
-        is_protected, reason = self.is_protected_path(path)
+        is_protected, reason = self.is_protected_path(str(resolved_path))
         if is_protected:
             result['blocked'] = True
             result['blocked_reason'] = reason
             result['safe'] = False
             return result
+
+        if operation == 'create':
+            if resolved_path.exists() and resolved_path.is_dir():
+                result['safe'] = False
+                result['warnings'].append(f"Path already exists as a directory: {resolved_path}")
+                return result
+            return result
+
+        if not resolved_path.exists():
+            result['safe'] = False
+            result['warnings'].append(f"Path does not exist: {resolved_path}")
+            return result
         
         # For delete operations on directories
-        if operation == 'delete' and os.path.isdir(path):
+        if operation == 'delete' and resolved_path.is_dir():
             # Check file count
-            exceeds_count, file_count = self.check_file_count(path)
+            exceeds_count, file_count = self.check_file_count(str(resolved_path))
             if exceeds_count:
                 result['requires_confirmation'] = True
                 result['warnings'].append(f"Directory contains {file_count} files (threshold: {self.max_file_count_threshold})")
             
             # Check size
-            size_bytes = self.get_directory_size(path)
+            size_bytes = self.get_directory_size(str(resolved_path))
             size_mb = size_bytes / (1024 * 1024)
             if size_mb > self.max_size_mb_threshold:
                 result['requires_confirmation'] = True

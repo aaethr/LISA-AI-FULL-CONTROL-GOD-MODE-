@@ -1,6 +1,6 @@
 @echo off
 echo ==========================================
-echo  Launching Michael AI God Mode v2.0
+echo  Launching LISA Personal AI
 echo ==========================================
 echo.
 
@@ -17,7 +17,6 @@ if errorlevel 1 (
 
 echo.
 echo Starting Michael AI...
-echo Browser will open automatically at http://127.0.0.1:8000/app
 echo.
 
 python backend\main.py

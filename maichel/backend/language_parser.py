@@ -53,7 +53,8 @@ class LanguageParser:
         self.lock_keywords = [
             'lock', 'lock screen', 'lock computer',
             'लॉक', 'लॉक करो', 'ताला लगा',
-            'lock kar', 'lock karo', 'taala laga'
+            'lock kar', 'lock karo', 'taala laga',
+            'ล็อกหน้าจอ', 'ล็อคหน้าจอ', 'ล็อก', 'ล็อค'
         ]
         
         self.sleep_keywords = [
@@ -64,7 +65,7 @@ class LanguageParser:
         
         # Application control keywords
         self.open_keywords = [
-            'open', 'start', 'launch', 'run',
+            'เปิดโปรแกรม', 'เปิด', 'open', 'start', 'launch', 'run',
             'खोल', 'खोलो', 'चालू', 'चलाओ', 'ओपन', 'स्टार्ट',
             'khol', 'kholo', 'chalao', 'chalu kar', 'chalu', 'start kar', 'open kar'
         ]
@@ -72,25 +73,26 @@ class LanguageParser:
         self.close_keywords = [
             'close', 'exit', 'quit', 'kill',
             'बंद', 'बंद करो', 'क्लोज',
-            'band kar', 'close kar', 'band karo', 'exit kar'
+            'band kar', 'close kar', 'band karo', 'exit kar',
+            'ปิด'
         ]
         
         # Common application name mappings
         self.app_mappings = {
             # Browsers
-            'chrome': ['chrome', 'google', 'browser', 'ब्राउज़र', 'ब्राउजर', 'क्रोम', 'गूगल', 'internet'],
+            'chrome': ['chrome', 'google', 'browser', 'ब्राउज़र', 'ब्राउजर', 'क्रोम', 'गूगल', 'internet', 'โครม', 'กูเกิล', 'เบราว์เซอร์'],
             'firefox': ['firefox', 'फायरफॉक्स'],
             'edge': ['edge', 'एज', 'microsoft edge'],
             
             # Editors
-            'notepad': ['notepad', 'नोटपैड', 'copy', 'likhne waala'],
+            'notepad': ['notepad', 'नोटपैड', 'copy', 'likhne waala', 'โน้ตแพด'],
             'vscode': ['vscode', 'vs code', 'code', 'visual studio code', 'कोड', 'coding'],
             
             # System
             'explorer': ['explorer', 'file explorer', 'folder', 'files', 'फोल्डर', 'फाइल', 'pc', 'this pc'],
             'cmd': ['cmd', 'command prompt', 'terminal', 'कमांड', 'टर्मिनल', 'kala dabba', 'kaale dabba'],
-            'calculator': ['calculator', 'calc', 'कैलकुलेटर', 'hisaab'],
-            'settings': ['settings', 'सेटिंग्स', 'control panel'],
+            'calculator': ['calculator', 'calc', 'कैलकुलेटर', 'hisaab', 'เครื่องคิดเลข'],
+            'settings': ['settings', 'सेटिंग्स', 'control panel', 'ตั้งค่า', 'การตั้งค่า'],
             
             # Common apps
             'spotify': ['spotify', 'music', 'संगीत', 'म्यूजिक', 'gaana', 'gaane'],
@@ -99,9 +101,9 @@ class LanguageParser:
         }
 
         # New System Keywords
-        self.volume_keywords = ['volume', 'awaz', 'sound', 'awaaz', 'shor', 'aawaz', 'आवाज']
-        self.brightness_keywords = ['brightness', 'roshni', 'light', 'chamak', 'screen', 'ब्राइटनेस']
-        self.settings_keywords = ['settings', 'seting', 'vikalp', 'seeting', 'सेटिंग्स']
+        self.volume_keywords = ['volume', 'awaz', 'sound', 'awaaz', 'shor', 'aawaz', 'आवाज', 'เสียง']
+        self.brightness_keywords = ['brightness', 'roshni', 'light', 'chamak', 'screen', 'ब्राइटनेस', 'ความสว่าง']
+        self.settings_keywords = ['settings', 'seting', 'vikalp', 'seeting', 'सेटिंगส์', 'ตั้งค่า']
     
     def parse_command(self, text: str) -> Dict:
         """
@@ -127,7 +129,11 @@ class LanguageParser:
     
     def _remove_wake_words(self, text: str) -> str:
         """Remove wake words from command"""
-        wake_words = ['michael', 'mike', 'माइकल', 'माइक', 'lisa', 'leesa', 'लिसा', 'लीसा']
+        wake_words = [
+            'michael', 'mike', 'माइकल', 'माइक', 'lisa', 'leesa',
+            'ลิซ่า', 'ลีซ่า', 'ลิซา', 'ลีซา', 'ลิสา', 'ลีสา',
+            'लिसा', 'लीसा'
+        ]
         for word in wake_words:
             text = text.replace(word, '')
         return text.strip()
@@ -135,12 +141,27 @@ class LanguageParser:
     def _detect_intent(self, text: str) -> Dict:
         """Detect user intent from cleaned text"""
         
-        # Conversational / Identity
-        if self._contains_any(text, ['kaun ho', 'who are you', 'naam kya', 'identity', 'about you']):
-            return {'intent': 'about_me', 'entities': {}, 'confidence': 0.9, 'original_text': text}
-        
-        if self._contains_any(text, ['kya kar sakti', 'features', 'help', 'madad', 'capabilities']):
-            return {'intent': 'capabilities', 'entities': {}, 'confidence': 0.9, 'original_text': text}
+        # Conversational messages are answered by the assistant brain.
+        if self._contains_any(text, ['kaun ho', 'who are you', 'naam kya', 'identity', 'about you',
+                                     'kya kar sakti', 'features', 'help', 'madad', 'capabilities',
+                                     'skill', 'skills', 'ทักษะ']):
+            return {'intent': 'chat', 'entities': {}, 'confidence': 0.9, 'original_text': text}
+
+        if self._contains_any(
+            text,
+            [
+                'เช็คสเปก',
+                'เช็คสเปค',
+                'เช็คระบบ',
+                'วิเคราะห์เครื่อง',
+                'เครื่องมีปัญหาไหม',
+                'ตรวจสุขภาพเครื่อง',
+                'system health',
+                'check pc',
+                'check computer',
+            ],
+        ):
+            return {'intent': 'system_check', 'entities': {}, 'confidence': 0.95, 'original_text': text}
 
         # System shutdown
         if self._contains_any(text, self.shutdown_keywords):
@@ -174,35 +195,35 @@ class LanguageParser:
             app_name = self._extract_app_name(text, self.open_keywords)
             return {'intent': 'app_open', 'entities': {'app': app_name}, 'confidence': 0.9, 'original_text': text}
         
+        # Volume
+        if self._contains_any(text, self.volume_keywords):
+            direction = 'up' if any(w in text for w in ['badhao', 'up', 'high', 'increase', 'เพิ่ม', 'ดังขึ้น']) else \
+                        'down' if any(w in text for w in ['kam', 'down', 'low', 'decrease', 'ลด', 'เบาลง']) else \
+                        'mute' if any(w in text for w in ['mute', 'chup', 'band', 'ปิดเสียง', 'เงียบ']) else 'up'
+            return {'intent': 'volume', 'entities': {'direction': direction}, 'confidence': 0.9, 'original_text': text}
+
+        # Brightness
+        if self._contains_any(text, self.brightness_keywords):
+            direction = 'up' if any(w in text for w in ['badhao', 'up', 'high', 'increase', 'bright', 'เพิ่ม', 'สว่างขึ้น']) else \
+                        'down' if any(w in text for w in ['kam', 'down', 'low', 'decrease', 'dark', 'ลด', 'มืดลง']) else 'up'
+            return {'intent': 'brightness', 'entities': {'direction': direction}, 'confidence': 0.9, 'original_text': text}
+
         # App close
         if self._contains_any(text, self.close_keywords):
             app_name = self._extract_app_name(text, self.close_keywords)
             return {'intent': 'app_close', 'entities': {'app': app_name}, 'confidence': 0.9, 'original_text': text}
 
-        # Volume
-        if self._contains_any(text, self.volume_keywords):
-            direction = 'up' if any(w in text for w in ['badhao', 'up', 'high', 'increase']) else \
-                        'down' if any(w in text for w in ['kam', 'down', 'low', 'decrease']) else \
-                        'mute' if any(w in text for w in ['mute', 'chup', 'band']) else 'up'
-            return {'intent': 'volume', 'entities': {'direction': direction}, 'confidence': 0.9, 'original_text': text}
-
-        # Brightness
-        if self._contains_any(text, self.brightness_keywords):
-            direction = 'up' if any(w in text for w in ['badhao', 'up', 'high', 'increase', 'bright']) else \
-                        'down' if any(w in text for w in ['kam', 'down', 'low', 'decrease', 'dark']) else 'up'
-            return {'intent': 'brightness', 'entities': {'direction': direction}, 'confidence': 0.9, 'original_text': text}
-
         # Settings
         if self._contains_any(text, self.settings_keywords):
-            page = 'display' if 'display' in text or 'screen' in text else \
+            page = 'display' if 'display' in text or 'screen' in text or 'หน้าจอ' in text else \
                    'apps' if 'app' in text or 'feature' in text else \
-                   'wifi' if 'wifi' in text or 'net' in text else 'settings'
+                   'wifi' if 'wifi' in text or 'net' in text or 'ไวไฟ' in text or 'อินเทอร์เน็ต' in text else 'settings'
             return {'intent': 'settings', 'entities': {'page': page}, 'confidence': 0.9, 'original_text': text}
 
-        # Unknown intent - return as terminal command
+        # Unknown input is conversational; never interpret it as a shell command.
         return {
-            'intent': 'terminal_command',
-            'entities': {'command': text},
+            'intent': 'chat',
+            'entities': {},
             'confidence': 0.5,
             'original_text': text
         }
@@ -251,50 +272,83 @@ class LanguageParser:
         fillers = {
             'hinglish': ['Theek hai Admin...', 'Hmm, samajh gayi...', 'Zaroor...', 'Ji, turant karti hoon...', 'Oye hoye, ye lijiye...'],
             'hindi': ['ठीक है एडमिन...', 'जी, अभी करती हूँ...', 'समझ गई...', 'ज़रूर...'],
-            'english': ['Okay Admin...', 'Sure thing...', 'Processing that for you...', 'Right away...']
+            'english': ['Okay Admin...', 'Sure thing...', 'Processing that for you...', 'Right away...'],
+            'thai': ['ได้ค่ะ', 'เรียบร้อยค่ะ', 'กำลังจัดการให้ค่ะ']
         }
         
         prefix = random.choice(fillers.get(language, fillers['hinglish']))
 
         responses = {
             'about_me': {
-                'hinglish': f"{prefix} Main Lisa hoon, Michael project ki sabse advance AI. Main aapke computer ko God Mode mein control kar sakti hoon.",
-                'hindi': f"{prefix} मैं लिसा हूँ, माइकल प्रोजेक्ट की सबसे उन्नत एआई।",
-                'english': f"{prefix} I am Lisa, the most advanced AI of the Michael project."
+                'hinglish': f"{prefix} Main LISA hoon, aapki personal assistant.",
+                'hindi': f"{prefix} मैं लिसा हूँ, आपकी निजी सहायक।",
+                'english': f"{prefix} I am LISA, your personal assistant.",
+                'thai': "ฉันคือลิซ่า ผู้ช่วยส่วนตัวของคุณค่ะ"
             },
             'capabilities': {
                 'hinglish': f"{prefix} Main apps khol sakti hoon, volume/brightness adjust kar sakti hoon, aur system settings control kar sakti hoon. Bas hukum dijiye!",
                 'hindi': f"{prefix} मैं ऐप्स खोल सकती हूँ और सिस्टम सेटिंग्स नियंत्रित कर सकती हूँ।",
-                'english': f"{prefix} I can open apps, adjust system controls, and manage settings. Just ask!"
+                'english': f"{prefix} I can open apps, adjust system controls, and manage settings. Just ask!",
+                'thai': "ฉันช่วยตอบคำถาม จดจำโน้ต และทำงานที่ระบบอนุญาตได้ค่ะ"
             },
             'system_lock': {
                 'hinglish': f"{prefix} Suraksha sabse pehle! Computer lock kar rahi hoon. Khayal rakhiyega.",
                 'hindi': f"{prefix} कंप्यूटर लॉक हो रहा है।",
-                'english': f"{prefix} Safety first! Locking your computer now."
+                'english': f"{prefix} Safety first! Locking your computer now.",
+                'thai': "กำลังล็อกหน้าจอคอมพิวเตอร์ค่ะ"
             },
             'volume': {
                 'hinglish': f"{prefix} Awaz adjust ho gayi hai. Kya itna kafi hai?",
                 'hindi': f"{prefix} आवाज सेट कर दी गई है।",
-                'english': f"{prefix} Volume adjusted. Is that better?"
+                'english': f"{prefix} Volume adjusted. Is that better?",
+                'thai': "ปรับระดับเสียงแล้วค่ะ"
             },
             'brightness': {
                 'hinglish': f"{prefix} Roshni kam-zyada kar di hai. Aankhon ka dhayan rakhiye!",
                 'hindi': f"{prefix} ब्राइटनेस बदल दी गई है।",
-                'english': f"{prefix} Brightness updated. Watch your eyes!"
+                'english': f"{prefix} Brightness updated. Watch your eyes!",
+                'thai': "ปรับความสว่างแล้วค่ะ"
             },
             'app_open': {
                 'hinglish': f"{prefix} App khul raha hai. Kuch aur chahiye?",
                 'hindi': f"{prefix} ऐप खुल रहा है।",
-                'english': f"{prefix} Launching the application now."
+                'english': f"{prefix} Launching the application now.",
+                'thai': "กำลังเปิดแอปที่เลือกค่ะ"
             },
-            'terminal_command': {
-                'hinglish': f"{prefix} Command execute ho rahi hai. Command prompt check kijiye.",
-                'hindi': f"{prefix} कमांड चल रही है।",
-                'english': f"{prefix} Executing system command."
-            }
+            'app_close': {
+                'thai': "กำลังปิดแอปที่เลือกค่ะ"
+            },
+            'settings': {
+                'thai': "กำลังเปิดการตั้งค่าค่ะ"
+            },
+            'system_shutdown': {
+                'thai': "กำหนดปิดเครื่องในอีกหนึ่งนาทีค่ะ"
+            },
+            'system_restart': {
+                'thai': "กำหนดรีสตาร์ตเครื่องในอีกหนึ่งนาทีค่ะ"
+            },
+            'system_sleep': {
+                'thai': "กำลังให้คอมพิวเตอร์เข้าสู่โหมดพักค่ะ"
+            },
+            'system_check': {
+                'thai': "กำลังตรวจสอบข้อมูลเครื่องและบันทึกผลไว้ในเครื่องนี้ค่ะ"
+            },
+            'file_create': {
+                'thai': "สร้างไฟล์แล้วค่ะ"
+            },
+            'file_delete': {
+                'thai': "ลบไฟล์แล้วค่ะ"
+            },
+            'chat': {
+                'hinglish': f"{prefix} Main aapki baat sun rahi hoon.",
+                'hindi': f"{prefix} मैं आपकी बात सुन रही हूँ।",
+                'english': f"{prefix} I am ready to help.",
+                'thai': "ลิซ่าพร้อมช่วยเหลือค่ะ"
+            },
         }
         
-        return responses.get(intent, {}).get(language, f"{prefix} Kaam ho raha hai.")
+        default_response = "กำลังดำเนินการค่ะ" if language == 'thai' else f"{prefix} Kaam ho raha hai."
+        return responses.get(intent, {}).get(language, default_response)
 
 # Global instance
 language_parser = LanguageParser()

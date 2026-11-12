@@ -1,75 +1,237 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LISA - AI Assistant</title>
+    <title>LISA - Personal AI</title>
     <!-- Use relative paths with versioning to bust cache -->
-    <link rel="stylesheet" href="/static/style.css?v=2.5">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap"
-        rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css?v=4.1">
 </head>
 
 <body>
     <div class="glass-container">
-        <header>
-            <div class="logo">LISA <span>GOD MODE v2.0</span></div>
-            <div class="status-badge" id="backend-status">OFFLINE</div>
-            <div class="power-indicator">⚡ FULL SYSTEM ACCESS</div>
+        <header class="topbar">
+            <div class="logo">LISA <span>PERSONAL AI</span></div>
+            <div class="topbar-status">
+                <div class="status-badge" id="backend-status">OFFLINE</div>
+                <div class="power-indicator">READY TO ASSIST</div>
+            </div>
         </header>
 
-        <main>
-            <div class="ai-avatar-section">
-                <div class="avatar-container">
-                    <div class="lisa-avatar-frame" id="lisa-avatar">
-                        <img src="/static/lisa_v2.jpg" alt="Lisa AI" class="lisa-image">
-                        <div class="lisa-mouth" id="lisa-mouth"></div>
-                        <div class="avatar-glow-ring"></div>
-                        <div class="scanning-line"></div>
-                        <div class="emotion-overlay tears" id="tears-container"></div>
-                        <div class="emotion-overlay cheeks" id="cheeks-container"></div>
+        <main class="dashboard">
+            <div class="dashboard-grid">
+                <aside class="dashboard-panel system-panel" aria-labelledby="system-title">
+                    <div class="panel-heading">
+                        <div>
+                            <span class="eyebrow">DAILY MONITOR</span>
+                            <h2 id="system-title">สุขภาพเครื่อง</h2>
+                        </div>
+                        <span class="live-dot" aria-label="อ่านข้อมูลฮาร์ดแวร์แบบอ่านอย่างเดียว"></span>
                     </div>
-                    <div class="speech-bubble" id="speech-bubble"></div>
-                </div>
 
-                <div class="voice-indicator" id="voice-indicator">
-                    <div class="wave"></div>
-                    <div class="wave"></div>
-                    <div class="wave"></div>
-                </div>
+                    <div class="health-overview">
+                        <div class="health-ring" id="health-ring">
+                            <div class="health-ring-center">
+                                <strong id="health-score">--</strong>
+                                <span>HEALTH</span>
+                            </div>
+                        </div>
+                        <div>
+                            <strong id="health-status">ยังไม่ได้ตรวจ</strong>
+                            <span id="last-checked">กดตรวจเพื่ออ่านข้อมูลเครื่อง</span>
+                        </div>
+                    </div>
 
-                <div class="avatar-status" id="avatar-status">💜 System Initialized...</div>
-            </div>
+                    <div class="metric-list">
+                        <div class="metric-row">
+                            <span class="metric-icon cpu-icon">CPU</span>
+                            <div class="metric-copy"><span>โปรเซสเซอร์</span><strong id="cpu-name">--</strong></div>
+                            <span class="metric-value" id="cpu-value">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-icon ram-icon">RAM</span>
+                            <div class="metric-copy"><span>หน่วยความจำ</span><strong id="ram-detail">--</strong></div>
+                            <span class="metric-value" id="ram-value">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-icon disk-icon">SSD</span>
+                            <div class="metric-copy"><span>พื้นที่ไดรฟ์ระบบ</span><strong id="disk-detail">--</strong></div>
+                            <span class="metric-value" id="disk-value">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-icon gpu-icon">GPU</span>
+                            <div class="metric-copy"><span>กราฟิก</span><strong id="gpu-name">--</strong></div>
+                        </div>
+                    </div>
 
-            <div class="control-grid">
-                <div class="terminal-card glass-card">
-                    <h3>Command Log</h3>
+                    <div class="trend-section">
+                        <div class="trend-heading"><span>คะแนนย้อนหลัง</span><span>30 วัน</span></div>
+                        <div class="trend-chart" id="health-history" aria-label="กราฟคะแนนสุขภาพย้อนหลัง">
+                            <span class="empty-chart">ยังไม่มีข้อมูล</span>
+                        </div>
+                    </div>
+
+                    <button class="scan-button" id="scan-system-btn" onclick="loadSystemReport()">
+                        <span aria-hidden="true">⌕</span> ตรวจเครื่องและบันทึกผล
+                    </button>
+                    <p class="privacy-note">อ่านอย่างเดียว · บันทึกไว้ในเครื่องนี้วันละครั้ง</p>
+                </aside>
+
+                <section class="center-stage" aria-label="LISA assistant">
+                    <div class="stage-orbit stage-orbit-one"></div>
+                    <div class="stage-orbit stage-orbit-two"></div>
+                    <div class="ai-avatar-section">
+                        <div class="avatar-container">
+                            <div class="lisa-avatar-frame" id="lisa-avatar">
+                                <svg class="avatar-art" viewBox="0 0 240 240" role="img" aria-label="LISA, a friendly AI assistant">
+                                    <defs>
+                                        <linearGradient id="shell-gradient" x1="0" y1="0" x2="1" y2="1">
+                                            <stop offset="0" stop-color="#b6fff1" />
+                                            <stop offset="0.52" stop-color="#63d9d3" />
+                                            <stop offset="1" stop-color="#8c83ff" />
+                                        </linearGradient>
+                                        <linearGradient id="face-gradient" x1="0" y1="0" x2="0.9" y2="1">
+                                            <stop offset="0" stop-color="#163047" />
+                                            <stop offset="1" stop-color="#091824" />
+                                        </linearGradient>
+                                        <radialGradient id="eye-gradient">
+                                            <stop offset="0" stop-color="#eafffb" />
+                                            <stop offset="0.45" stop-color="#72f5dc" />
+                                            <stop offset="1" stop-color="#55bdf2" />
+                                        </radialGradient>
+                                    </defs>
+                                    <circle class="avatar-orbit orbit-back" cx="120" cy="120" r="96" />
+                                    <circle class="avatar-orbit orbit-front" cx="120" cy="120" r="82" />
+                                    <path class="avatar-spark" d="M39 79l4 10 10 4-10 4-4 10-4-10-10-4 10-4z" />
+                                    <path class="avatar-spark spark-small" d="M198 144l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" />
+                                    <path class="avatar-antenna" d="M120 43V31" />
+                                    <circle class="avatar-antenna-light" cx="120" cy="27" r="7" />
+                                    <rect class="avatar-shell" x="48" y="52" width="144" height="148" rx="48" />
+                                    <path class="avatar-ear" d="M48 107H39a10 10 0 0 0-10 10v17a10 10 0 0 0 10 10h9M192 107h9a10 10 0 0 1 10 10v17a10 10 0 0 1-10 10h-9" />
+                                    <rect class="avatar-face" x="65" y="73" width="110" height="94" rx="35" />
+                                    <circle class="avatar-eye" cx="96" cy="113" r="9" />
+                                    <circle class="avatar-eye" cx="144" cy="113" r="9" />
+                                    <path class="avatar-mouth-line" d="M101 141q19 15 38 0" />
+                                    <path class="avatar-chest-line" d="M91 181h58" />
+                                    <circle class="avatar-chest-light" cx="120" cy="181" r="4" />
+                                </svg>
+                                <div class="lisa-mouth" id="lisa-mouth"></div>
+                                <div class="avatar-glow-ring"></div>
+                                <div class="scanning-line"></div>
+                                <div class="emotion-overlay tears" id="tears-container"></div>
+                                <div class="emotion-overlay cheeks" id="cheeks-container"></div>
+                            </div>
+                            <div class="speech-bubble" id="speech-bubble"></div>
+                        </div>
+
+                        <div class="voice-indicator" id="voice-indicator">
+                            <div class="wave"></div>
+                            <div class="wave"></div>
+                            <div class="wave"></div>
+                        </div>
+                        <div class="avatar-status" id="avatar-status">LISA พร้อมช่วยเหลือ</div>
+                        <h1 class="stage-title">สวัสดีค่ะ <span>ฉันคือลิซ่า</span></h1>
+                        <p class="stage-subtitle">ผู้ช่วย AI ส่วนตัวที่พร้อมดูแลเครื่องของคุณ</p>
+                    </div>
+
+                    <div class="stage-quick-actions">
+                        <button class="quick-action" onclick="processCommand('เช็คสเปกคอม')">
+                            <span class="action-symbol">⌘</span><span>ตรวจสเปก</span>
+                        </button>
+                        <button class="quick-action" onclick="processCommand('เครื่องมีปัญหาไหม')">
+                            <span class="action-symbol">✦</span><span>วิเคราะห์เครื่อง</span>
+                        </button>
+                        <button class="quick-action" onclick="document.getElementById('command-input').focus()">
+                            <span class="action-symbol">▤</span><span>ถาม LISA</span>
+                        </button>
+                        <button class="quick-action" onclick="loadMemory()">
+                            <span class="action-symbol">◎</span><span>ดูความจำ</span>
+                        </button>
+                    </div>
+                </section>
+
+                <aside class="dashboard-panel activity-panel" aria-labelledby="activity-title">
+                    <div class="panel-heading">
+                        <div>
+                            <span class="eyebrow">YOUR AI WORKSPACE</span>
+                            <h2 id="activity-title">พื้นที่ผู้ช่วย</h2>
+                        </div>
+                        <span class="panel-menu" aria-hidden="true">•••</span>
+                    </div>
+
+                    <div class="feature-grid">
+                        <button class="feature-card" onclick="processCommand('เช็คสเปกคอม')">
+                            <span class="feature-icon purple">⌘</span>
+                            <strong>ตรวจระบบ</strong>
+                            <span>สเปกและสุขภาพเครื่อง</span>
+                        </button>
+                        <button class="feature-card" onclick="toggleVoice()">
+                            <span class="feature-icon gold">◖</span>
+                            <strong>สั่งงานด้วยเสียง</strong>
+                            <span>พูดคุยกับ LISA</span>
+                        </button>
+                        <button class="feature-card" onclick="loadSkills()">
+                            <span class="feature-icon blue">✧</span>
+                            <strong>Skills &amp; Tools</strong>
+                            <span>ดูเครื่องมือที่ตรวจสอบแล้ว</span>
+                        </button>
+                        <button class="feature-card" onclick="saveMemoryFromPrompt()">
+                            <span class="feature-icon violet">▤</span>
+                            <strong>จดจำโน้ต</strong>
+                            <span>พิมพ์ “จำไว้ ...”</span>
+                        </button>
+                    </div>
+
+                    <div class="activity-heading">
+                        <div><span class="eyebrow">SESSION</span><h3>กิจกรรมล่าสุด</h3></div>
+                        <span class="activity-indicator">● พร้อมใช้งาน</span>
+                    </div>
                     <div id="terminal-log" class="log-content">
                         <div class="log-entry">Waiting for connection...</div>
                     </div>
-                </div>
+                </aside>
             </div>
 
-            <div class="input-area glass-card">
-                <button id="mic-btn" class="icon-btn" onclick="toggleVoice()">
+            <div class="input-area">
+                <button id="mic-btn" class="icon-btn" aria-label="เปิดหรือปิดไมโครโฟน" onclick="toggleVoice()">
                     <div class="mic-icon"></div>
                 </button>
-                <input type="text" id="command-input" placeholder="Give Lisa a command..." autocomplete="off">
-                <button id="send-btn" onclick="handleInput()">SEND</button>
+                <input type="text" id="command-input" placeholder="พิมพ์ข้อความหรือคำสั่งถึง LISA..." autocomplete="off">
+                <button id="send-btn" onclick="handleInput()">ส่งข้อความ <span aria-hidden="true">↗</span></button>
             </div>
         </main>
     </div>
 
     <!-- Start Overlay for Browser Gesture -->
     <div id="start-overlay" class="start-overlay">
-        <button class="start-btn" onclick="startLisaSystem()">ACTIVATE LISA AI</button>
-        <p>Enabling high-performance system control and voice interaction</p>
+        <button class="start-btn" onclick="startLisaSystem()">เริ่มใช้งาน LISA</button>
+        <p>พิมพ์คุยได้เสมอ · กดปุ่มไมค์เมื่อต้องการใช้เสียง · การรู้จำเสียงอาจใช้บริการออนไลน์</p>
     </div>
 
+    <dialog id="action-confirm" class="action-confirm" aria-labelledby="action-confirm-title">
+        <form method="dialog">
+            <h2 id="action-confirm-title">ยืนยันการเปลี่ยนแปลง</h2>
+            <p id="action-description"></p>
+            <p class="confirmation-safe">ไม่มีการเปลี่ยนแปลงจนกว่าจะกดอนุมัติ ยกเลิกคือค่าเริ่มต้นที่ปลอดภัย</p>
+            <div class="confirmation-actions">
+                <button type="button" class="cancel-action" onclick="cancelPendingAction()">ยกเลิก</button>
+                <button type="button" class="approve-action" onclick="approvePendingAction()">อนุมัติการดำเนินการนี้</button>
+            </div>
+        </form>
+    </dialog>
+    <dialog id="memory-manager" class="action-confirm memory-manager" aria-labelledby="memory-title">
+        <div class="memory-manager-header">
+            <h2 id="memory-title">ความจำของ LISA</h2>
+            <button type="button" class="cancel-action" onclick="document.getElementById('memory-manager').close()">ปิด</button>
+        </div>
+        <p class="confirmation-safe">บันทึกอยู่ในเครื่องนี้เท่านั้น การเพิ่ม แก้ไข หรือลบจะต้องอนุมัติอีกครั้ง</p>
+        <div id="memory-list" class="memory-list"></div>
+        <button type="button" class="approve-action" onclick="saveMemoryFromPrompt()">เพิ่มความจำ</button>
+    </dialog>
+
     <!-- Scripts at the end with versioning -->
-    <script src="/static/app.js?v=2.5"></script>
+    <script src="/static/app.js?v=4.1"></script>
 </body>
 
 </html>
