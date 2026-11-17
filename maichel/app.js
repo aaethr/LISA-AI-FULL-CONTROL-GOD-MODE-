@@ -8,9 +8,8 @@ let modelSetupNoticeShown = false;
 let conversationHistory = [];
 
 function addLog(msg, type = 'info') {
-    if (!terminalLog) {
-        console.log(`[${type}] ${msg}`);
-        return;
+    if (!terminalLog)             console.log(`[${type}] ${msg}`);
+            return;
     }
     const entry = document.createElement('div');
     entry.className = `log-entry ${type}`;
